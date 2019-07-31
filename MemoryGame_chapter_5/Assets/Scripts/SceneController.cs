@@ -24,12 +24,28 @@ public class SceneController : MonoBehaviour
     [SerializeField]
     private TextMesh scoreLabel;
 
+    private int[] generateStartPairNumbersArray()
+    {
+        int[] newNumbers = new int[images.Length * 2];
+
+        int count = 0;
+        for (int i = 0; i < newNumbers.Length; i+=2)
+        {
+            newNumbers[i] = count;
+            newNumbers[i+1] = count;
+
+            ++count;
+        }
+
+        return newNumbers;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         Vector3 startPos = originalCard.transform.position;
 
-        int[] numbers = { 0, 0, 1, 1, 2, 2, 3, 3 };
+        int[] numbers = generateStartPairNumbersArray();
         numbers = ShuffleArray(numbers);
 
         for (int i = 0; i < gridCols; ++i)
@@ -53,11 +69,8 @@ public class SceneController : MonoBehaviour
                 card.transform.position = new Vector3(posX, posY, startPos.z);
             }
         }
-
-        
     }
 
-    // Update is called once per frame
     private int[] ShuffleArray(int[] numbers)
     {
         int[] newArray = numbers.Clone() as int[];
@@ -94,11 +107,12 @@ public class SceneController : MonoBehaviour
     {
         if (_firstRevealed.id == _secondRevealed.id)
         {
-            ++_score;
-            scoreLabel.text = "Score: " + _score;
+            UpdateScore(1);
         }
         else
         {
+            UpdateScore(-1);
+
             yield return new WaitForSeconds(0.5f);
 
             _firstRevealed.Unreveal();
@@ -107,6 +121,12 @@ public class SceneController : MonoBehaviour
 
         _firstRevealed = null;
         _secondRevealed = null;
+    }
+
+    private void UpdateScore(int incrementScore)
+    {
+        _score = _score + incrementScore;
+        scoreLabel.text = "Score: " + _score;
     }
 
     public void Restart()
