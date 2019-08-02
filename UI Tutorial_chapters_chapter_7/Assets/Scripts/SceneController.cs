@@ -10,6 +10,24 @@ public class SceneController : MonoBehaviour
 
     private GameObject _enemy;
 
+    private float _enemySpeed = 3.0f;
+    private float _enemyStartSpeed = 3.0f;
+
+    private void Awake()
+    {
+        Messenger<float>.AddListener(GameEvent.SPEED_CHANGED, OnSpeedChanged);
+    }
+
+    private void OnDestroy()
+    {
+        Messenger<float>.RemoveListener(GameEvent.SPEED_CHANGED, OnSpeedChanged);
+    }
+
+    private void OnSpeedChanged(float value)
+    {
+        _enemySpeed = _enemyStartSpeed * value;
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -19,6 +37,7 @@ public class SceneController : MonoBehaviour
             _enemy.transform.position = new Vector3(0, 1, 0);
             float angle = Random.Range(0, 360);
             _enemy.transform.Rotate(0, angle, 0);
+            _enemy.GetComponent<WanderingAI>().speed = _enemySpeed;
         }
     }
 
